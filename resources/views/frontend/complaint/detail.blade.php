@@ -283,22 +283,49 @@
             </div>
         </div>
         <div class="card-body p-4">
-            @if($complaint->Response && $complaint->Response->response)
-                <div class="response-box ada">
-                    <div class="mb-2" style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.7;">
-                        Tanggal Respon:
-                        {{ $complaint->Response->response_date ? date('d F Y', strtotime($complaint->Response->response_date)) : '-' }}
-                    </div>
-                    {{ $complaint->Response->response }}
-                </div>
-            @else
-                <div class="response-box belum">
-                    <i class="fas fa-hourglass-half me-2"></i>
-                    Respon dari petugas belum tersedia. Laporan Anda sedang dalam proses penanganan.
-                </div>
-            @endif
+    @php
+        $res = $complaint->response ?? $complaint->Response ?? null;
+    @endphp
+
+    @if($res && $res->response)
+        <div class="response-box ada">
+            <div class="mb-2" style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.7;">
+                Tanggal Respon:
+                {{ $res->updated_at ? date('d F Y', strtotime($res->updated_at)) : '-' }}
+            </div>
+            {{ $res->response }}
         </div>
-    </div>
+
+        {{-- Bukti foto dari admin --}}
+        @if($res->bukti)
+            <div class="mt-3">
+                <div style="font-size:12px; font-weight:700; color:#6c757d; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">
+                    <i class="fas fa-paperclip me-1"></i> Bukti dari Petugas
+                </div>
+                @php
+                    $ext = strtolower(pathinfo($res->bukti, PATHINFO_EXTENSION));
+                @endphp
+                @if(in_array($ext, ['jpg','jpeg','png']))
+                    <img src="{{ url('bukti_laporan/' . $res->bukti) }}"
+                         alt="Bukti Respon"
+                         class="bukti-img">
+                @elseif($ext === 'pdf')
+                    <a href="{{ url('bukti_laporan/' . $res->bukti) }}"
+                       target="_blank"
+                       style="display:inline-flex; align-items:center; gap:8px; background:#1a1a2e; color:#fff; padding:10px 20px; border-radius:50px; font-size:13px; font-weight:600; text-decoration:none;">
+                        <i class="fas fa-file-pdf"></i> Lihat Dokumen PDF
+                    </a>
+                @endif
+            </div>
+        @endif
+
+    @else
+        <div class="response-box belum">
+            <i class="fas fa-hourglass-half me-2"></i>
+            Respon dari petugas belum tersedia. Laporan Anda sedang dalam proses penanganan.
+        </div>
+    @endif
+</div>
 
     {{-- Tombol kembali --}}
     <div style="animation: fadeUp 0.6s ease 0.3s both;">

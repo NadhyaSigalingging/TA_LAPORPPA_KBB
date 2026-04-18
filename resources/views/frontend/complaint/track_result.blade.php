@@ -177,12 +177,12 @@
     </div>
 
     @php
-        $progressWidth = match((string)$complaint->status) {
-            '0'        => '0%',
-            'process'  => '50%',
-            'finished' => '100%',
-            default    => '0%',
-        };
+       $progressWidth = match((string)$complaint->status) {
+    '0'                 => '0%',
+    '1', 'process'      => '50%',
+    '2', 'finished'     => '100%',
+    default             => '0%',
+};
     @endphp
 
     <div class="complaint-card">
@@ -259,24 +259,24 @@
                 </div>
 
                 {{-- Step 2: Diproses --}}
-                <div class="progress-step">
-                    <div class="step-circle {{ (string)$complaint->status === 'process' ? 'active' : ((string)$complaint->status === 'finished' ? 'completed' : '') }}">
-                        <i class="fas fa-spinner"></i>
-                    </div>
-                    <div class="step-label {{ (string)$complaint->status === 'process' ? 'active' : ((string)$complaint->status === 'finished' ? 'completed' : '') }}">
-                        Sedang<br>Diproses
-                    </div>
-                </div>
+<div class="progress-step">
+    <div class="step-circle {{ in_array((string)$complaint->status, ['process','1']) ? 'active' : (in_array((string)$complaint->status, ['finished','2']) ? 'completed' : '') }}">
+        <i class="fas fa-spinner"></i>
+    </div>
+    <div class="step-label {{ in_array((string)$complaint->status, ['process','1']) ? 'active' : (in_array((string)$complaint->status, ['finished','2']) ? 'completed' : '') }}">
+        Sedang<br>Diproses
+    </div>
+</div>
 
-                {{-- Step 3: Selesai --}}
-                <div class="progress-step">
-                    <div class="step-circle {{ (string)$complaint->status === 'finished' ? 'completed' : '' }}">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                    <div class="step-label {{ (string)$complaint->status === 'finished' ? 'completed' : '' }}">
-                        Selesai
-                    </div>
-                </div>
+{{-- Step 3: Selesai --}}
+<div class="progress-step">
+    <div class="step-circle {{ in_array((string)$complaint->status, ['finished','2']) ? 'completed' : '' }}">
+        <i class="fas fa-check-double"></i>
+    </div>
+    <div class="step-label {{ in_array((string)$complaint->status, ['finished','2']) ? 'completed' : '' }}">
+        Selesai
+    </div>
+</div>
 
             </div>
         </div>

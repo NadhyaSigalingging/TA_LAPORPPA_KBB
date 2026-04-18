@@ -1,8 +1,8 @@
 @if(session('success'))
-<div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
-    <i class="fas fa-check-circle"></i>
+<div class="alert alert-success">
     {{ session('success') }}
-    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    <br>
+    Kode laporan: <strong>{{ session('kode') }}</strong>
 </div>
 @endif
 

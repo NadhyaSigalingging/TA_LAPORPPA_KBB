@@ -24,8 +24,9 @@ class Complaint extends Model
     /**
      * Relasi: Setiap laporan bisa punya satu respons
      */
+
     public function response()
-    {
-        return $this->hasOne(Response::class, 'complaint_id', 'id');
-    }
+{
+    return $this->hasOne(\App\Models\Response::class, 'complaint_id', 'id');
+}
 }

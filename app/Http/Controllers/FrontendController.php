@@ -222,10 +222,13 @@ class FrontendController extends Controller
 
         $complaint->save();
 
-        Response::create(['complaint_id' => $complaint->id]);
+
 
         return redirect()->route('complaint')
-            ->with('success', 'Pengaduan berhasil dikirim! Kode laporan Anda: <strong>' . $uniqueCode . '</strong>. Simpan kode ini untuk melacak laporan.');
+        ->with([
+    'success' => 'Pengaduan berhasil dikirim!',
+    'kode' => $uniqueCode
+]);
     } catch (\Exception $e) {
         return back()
             ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
@@ -251,14 +254,14 @@ class FrontendController extends Controller
     }
 
     public function detail_complaint($id)
-    {
-        if (!Session::has('nik')) {
-            return redirect('/');
-        }
-
-        $complaint = Complaint::findOrFail($id);
-        return view('frontend.complaint.detail', compact('complaint'));
+{
+    if (!Session::has('nik')) {
+        return redirect('/');
     }
+
+    $complaint = Complaint::with('response')->findOrFail($id);
+    return view('frontend.complaint.detail', compact('complaint'));
+}
 
     public function track_complaint()
 {
