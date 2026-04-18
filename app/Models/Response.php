@@ -9,15 +9,33 @@ class Response extends Model
 {
     use HasFactory;
 
-    protected $table = 'response';
+    protected $table = 'responses'; // pastikan sesuai database
     protected $primaryKey = 'id';
-    protected $guarded = [];
 
-    /**
-     * Relasi: Setiap respons punya satu laporan
-     */
+    protected $fillable = [
+        'complaint_id',
+        'admin_id',
+        'response',
+        'bukti'
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATION: Complaint
+    |--------------------------------------------------------------------------
+    */
     public function complaint()
     {
         return $this->belongsTo(Complaint::class, 'complaint_id', 'id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATION: Admin (User)
+    |--------------------------------------------------------------------------
+    */
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'admin_id', 'id');
     }
 }
