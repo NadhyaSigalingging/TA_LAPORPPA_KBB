@@ -8,19 +8,25 @@ use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
-    public function handle($request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        // 🔐 pastikan sudah login
+        // 🔐 belum login
         if (!Auth::check()) {
             return redirect()->route('admin.login');
         }
 
-        // 🔐 cek role / level
-        if (in_array(Auth::user()->level_id, $roles)) {
-            return $next($request);
+        $user = Auth::user();
+
+        // 🔐 cek status aktif
+        if ($user->status !== 'active') {
+            abort(403, 'Akun belum aktif');
         }
 
-        // 🚫 login tapi bukan admin
-        abort(403, 'Anda tidak punya akses');
+        // 🔐 cek role (STRING, bukan angka)
+        if (!in_array($user->role, $roles)) {
+            abort(403, 'Anda tidak punya akses');
+        }
+
+        return $next($request);
     }
 }

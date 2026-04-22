@@ -3,305 +3,209 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Login | Sistem Pengaduan Masyarakat</title>
+    <title>Login | Sistem Pengaduan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="{{asset('assets/images/favicon.ico')}}">
-    <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" />
-    <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" />
-    <link href="{{asset('assets/css/app.min.css')}}" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #20385F, #2C4A73);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            min-height: 100vh;
-        }
-
-        /* ANIMASI */
-        .card {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            animation: fadeIn 0.8s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* HEADER (PINK + NAVY) */
-        .bg-pink {
-            background: linear-gradient(135deg, #F8AFC4, #20385F);
-        }
-
-        .bg-pink h5 {
-            font-weight: 600;
-        }
-
-        .bg-pink p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .bg-pink img {
-            max-height: 140px;
-        }
-
-        /* INPUT */
-        .form-control {
-            border-radius: 8px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            transition: 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: #F8AFC4;
-            box-shadow: 0 0 0 0.2rem rgba(248, 175, 196, 0.25);
-        }
-
-        /* BUTTON */
-        .btn-pink {
-            background: linear-gradient(135deg, #F8AFC4, #20385F);
-            border: none;
-            color: white;
-            font-weight: 500;
-            border-radius: 8px;
-            padding: 10px;
-            transition: 0.3s;
-        }
-
-        .btn-pink:hover {
-            background: linear-gradient(135deg, #f48fb1, #162D4A);
-        }
-
-        /* LOGO */
-        .avatar-title {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* LANGUAGE */
-        .language-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .language-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 6px 12px;
-            border-radius: 6px;
-            backdrop-filter: blur(5px);
-        }
-
-        .language-options {
-            display: none;
-            position: absolute;
-            background: white;
-            right: 0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .language-option {
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .language-option:hover {
-            background: #f1f1f1;
-        }
-
-        .language-switcher:hover .language-options {
-            display: block;
-        }
-
-        /* ALERT */
-        .alert {
-            border-radius: 8px;
-        }
-    </style>
+    <!-- 🔥 TAMBAHAN: SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body>
+<body class="min-h-screen relative text-white">
 
-    <div class="language-container">
-        <div class="language-switcher">
-            <button class="language-btn" id="currentLanguage">
-                🌐 ID
-            </button>
-            <div class="language-options">
-                <div class="language-option" data-lang="id">Indonesia</div>
-                <div class="language-option" data-lang="en">English</div>
-            </div>
-        </div>
+    <!-- BACKGROUND -->
+    <div class="absolute inset-0">
+        <img src="{{ asset('assets/images/bg-login.jpeg') }}"
+            class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black/60"></div>
     </div>
 
-    <div class="account-pages my-5 pt-sm-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6 col-xl-5">
+    <div class="relative z-10 min-h-screen flex">
 
-                    <div class="card overflow-hidden">
+        <!-- LEFT (TIDAK DIHAPUS) -->
+        <div class="hidden lg:flex w-1/2 flex-col justify-center px-16 space-y-6">
 
-                        <div class="bg-pink bg-soft">
-                            <div class="row">
-                                <div class="col-7">
-                                    <div class="text-white p-4">
-                                        <h5 data-translate="login.title">Masuk</h5>
-                                        <p data-translate="login.subtitle">
-                                            Masuk ke sistem pengaduan masyarakat
-                                        </p>
-                                    </div>
-                                </div>
+            <h1 class="text-5xl font-bold">
+                Sistem Manajeman LAPORPPA-KBB
+            </h1>
 
-                                <div class="col-5 align-self-end text-end">
-                                    <img src="{{asset('assets/images/profile-img.png')}}" class="img-fluid">
-                                </div>
-                            </div>
-                        </div>
+            <p class="text-gray-200 text-lg">
+                Kelola laporan secara cepat, transparan, dan profesional.
+            </p>
 
-                        <div class="card-body pt-0">
+            <!-- FITUR -->
+            <div class="flex gap-4 mt-6">
 
-                            <div class="auth-logo text-center">
-                                <div class="avatar-md profile-user-wid mb-4 mx-auto">
-                                    <span class="avatar-title rounded-circle bg-light">
-                                        <img src="{{asset('assets/images/logo.svg')}}" height="34">
-                                    </span>
-                                </div>
-                            </div>
+                <div class="bg-white/10 backdrop-blur-xl p-5 rounded-xl w-44 border border-white/10">
+                    <svg class="w-6 h-6 mb-2 text-blue-400" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 11c1.657 0 3-1.343 3-3V6a3 3 0 10-6 0v2c0 1.657 1.343 3 3 3z" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M5 11h14v8a2 2 0 01-2 2H7a2 2 0 01-2-2v-8z" />
+                    </svg>
+                    <p class="font-semibold">Aman</p>
+                    <p class="text-sm text-gray-300">Data terlindungi</p>
+                </div>
 
-                            @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <ul class="mb-0">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
+                <div class="bg-white/10 backdrop-blur-xl p-5 rounded-xl w-44 border border-white/10">
+                    <svg class="w-6 h-6 mb-2 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <p class="font-semibold">Cepat</p>
+                    <p class="text-sm text-gray-300">Respon real-time</p>
+                </div>
 
-                            @if ($message = Session::get('error'))
-                                <div class="alert alert-danger">{{$message}}</div>
-                            @endif
+                <div class="bg-white/10 backdrop-blur-xl p-5 rounded-xl w-44 border border-white/10">
+                    <svg class="w-6 h-6 mb-2 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 10h18M9 21V10m6 11V10M4 10l1-6h14l1 6" />
+                    </svg>
+                    <p class="font-semibold">Transparan</p>
+                    <p class="text-sm text-gray-300">Monitoring jelas</p>
+                </div>
 
-                            @if ($message = Session::get('success'))
-                                <div class="alert alert-success">{{$message}}</div>
-                            @endif
+            </div>
 
-                            <form method="POST" action="{{ route('admin.login') }}">
-                                @csrf
+        </div>
 
-                                <div class="mb-3">
-                                    <label data-translate="login.username">Username</label>
-                                    <input type="text" name="username" class="form-control"
-                                        value="{{ old('username') }}">
-                                </div>
+        <!-- RIGHT -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center px-6">
 
-                                <div class="mb-3">
-                                    <label data-translate="login.password">Password</label>
-                                    <div class="input-group">
-                                        <input type="password" name="password" id="password" class="form-control">
-                                        <button type="button" class="btn btn-light"
-                                            onclick="togglePassword()">👁</button>
-                                    </div>
-                                </div>
+            <div class="w-full max-w-md">
 
-                                <div class="form-check mb-3">
-                                    <input type="checkbox" name="remember" class="form-check-input">
-                                    <label class="form-check-label" data-translate="login.remember">
-                                        Ingat Saya
-                                    </label>
-                                </div>
+                <div class="bg-white/10 backdrop-blur-2xl p-8 rounded-2xl shadow-2xl border border-white/20">
 
-                                <div class="mt-3 d-grid">
-                                    <button class="btn btn-pink" type="submit" data-translate="login.button">
-                                        Masuk
-                                    </button>
-                                </div>
+                    <!-- ICON -->
+                    <div class="flex justify-center mb-6">
+                        <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
 
-                            </form>
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 11c1.657 0 3-1.343 3-3V6a3 3 0 10-6 0v2c0 1.657 1.343 3 3 3z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5 11h14v8a2 2 0 01-2 2H7a2 2 0 01-2-2v-8z" />
+                            </svg>
+
                         </div>
                     </div>
 
-                    <div class="mt-5 text-center text-white">
-                        <p>
-                            ©
-                            <script>document.write(new Date().getFullYear())</script>
-                            Sistem Pengaduan Masyarakat
+                    <h2 class="text-2xl font-bold text-center mb-2">
+                        Selamat Datang Admin
+                    </h2>
+
+                    <p class="text-center text-gray-300 text-sm mb-6">
+                        Silakan login untuk melanjutkan
+                    </p>
+
+                    <!-- FORM -->
+                    <form method="POST" action="{{ route('admin.login') }}" class="space-y-4">
+                        @csrf
+
+                        <!-- USERNAME -->
+                        <div class="relative">
+                            <input type="text" name="username" value="{{ old('username') }}"
+                                class="w-full px-4 py-2 pl-10 rounded-lg bg-white/20 border border-white/20 
+                                focus:ring-2 focus:ring-blue-400 outline-none text-white"
+                                placeholder="Username">
+
+                            <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-300"
+                                fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5.121 17.804A7.963 7.963 0 0112 15c2.21 0 4.21.896 5.879 2.343M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+
+                        <!-- PASSWORD -->
+                        <div class="relative">
+                            <input type="password" name="password" id="password"
+                                class="w-full px-4 py-2 pl-10 pr-10 rounded-lg bg-white/20 border border-white/20 
+                                focus:ring-2 focus:ring-blue-400 outline-none text-white"
+                                placeholder="Password">
+
+                            <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-300"
+                                fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 11c1.657 0 3-1.343 3-3V6a3 3 0 10-6 0v2c0 1.657 1.343 3 3 3z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5 11h14v8a2 2 0 01-2 2H7a2 2 0 01-2-2v-8z" />
+                            </svg>
+
+                            <button type="button" onclick="togglePassword()"
+                                class="absolute right-3 top-2.5 text-gray-300 hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-width="2"
+                                        d="M15 12A3 3 0 119 12a3 3 0 016 0z" />
+                                    <path stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- 🔥 TAMBAHAN WARNING -->
+                        @if(session('error'))
+                        <p class="text-red-400 text-sm text-center">
+                            {{ session('error') }}
                         </p>
-                    </div>
+                        @endif
+
+                        <!-- LINK -->
+                        <div class="flex justify-between items-center text-sm mt-2">
+
+                            <a href="{{ route('admin.password.request') }}"
+                                class="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition">
+                                Lupa Password?
+                            </a>
+
+                            <a href="{{ route('admin.register') }}"
+                                class="flex items-center gap-1 text-gray-300 hover:text-white transition">
+                                 + Daftar
+                            </a>
+
+                        </div>
+
+                        <!-- BUTTON -->
+                        <button type="submit"
+                            class="w-full py-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg font-semibold hover:opacity-90 transition">
+                            Masuk
+                        </button>
+
+                    </form>
 
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <script src="{{asset('assets/libs/jquery/jquery.min.js')}}"></script>
-    <script src="{{asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+            </div>
+
+        </div>
+
+    </div>
 
     <script>
         function togglePassword() {
             const input = document.getElementById('password');
             input.type = input.type === 'password' ? 'text' : 'password';
         }
+    </script>
 
-        const translations = {
-            id: {
-                "login.title": "Masuk",
-                "login.subtitle": "Masuk ke sistem pengaduan masyarakat",
-                "login.username": "Username",
-                "login.password": "Password",
-                "login.remember": "Ingat Saya",
-                "login.button": "Masuk"
-            },
-            en: {
-                "login.title": "Login",
-                "login.subtitle": "Login to public complaint system",
-                "login.username": "Username",
-                "login.password": "Password",
-                "login.remember": "Remember Me",
-                "login.button": "Login"
-            }
-        };
-
-        function changeLanguage(lang) {
-            localStorage.setItem('lang', lang);
-            document.getElementById('currentLanguage').innerText = lang.toUpperCase();
-
-            document.querySelectorAll('[data-translate]').forEach(el => {
-                const key = el.getAttribute('data-translate');
-                el.innerText = translations[lang][key];
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const lang = localStorage.getItem('lang') || 'id';
-            changeLanguage(lang);
-
-            document.querySelectorAll('.language-option').forEach(el => {
-                el.addEventListener('click', () => {
-                    changeLanguage(el.dataset.lang);
-                });
-            });
-
-            setTimeout(() => {
-                $('.alert').fadeOut();
-            }, 2500);
+    <!-- 🔥 POPUP ERROR -->
+    @if(session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Login Gagal',
+            text: '{{ session('error') }}',
+            confirmButtonColor: '#dc2626',
         });
     </script>
+    @endif
 
 </body>
 

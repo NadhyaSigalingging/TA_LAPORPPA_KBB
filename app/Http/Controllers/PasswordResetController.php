@@ -6,11 +6,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Support\Str;
 use App\Models\Society;
+use App\Models\User;
 
 class PasswordResetController extends Controller
 {
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER (SOCIETY)
+    |--------------------------------------------------------------------------
+    */
+
     public function showForgotForm()
     {
         return view('frontend.password.forgot');
@@ -20,19 +27,15 @@ class PasswordResetController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:society,email',
-        ], [
-            'email.exists' => 'Email ini tidak terdaftar di sistem kami.',
         ]);
 
         $status = Password::broker('society')->sendResetLink(
             $request->only('email')
         );
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return back()->with('success', 'Link reset password telah dikirim ke email Anda. Silakan cek inbox.');
-        }
-
-        return back()->withErrors(['email' => 'Gagal mengirim link reset. Coba lagi.']);
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('success', 'Link reset dikirim ke email')
+            : back()->withErrors(['email' => 'Gagal kirim email']);
     }
 
     public function showResetForm(Request $request, $token)
@@ -46,29 +49,94 @@ class PasswordResetController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token'    => 'required',
-            'email'    => 'required|email',
+            'token' => 'required',
+            'email' => 'required|email',
             'password' => 'required|min:6|confirmed',
-        ], [
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'password.min'       => 'Password minimal 6 karakter.',
         ]);
 
         $status = Password::broker('society')->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (Society $user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->save();
+
+                $user->password = Hash::make($password);
+                $user->save();
+
                 event(new PasswordReset($user));
             }
         );
 
-        if ($status === Password::PASSWORD_RESET) {
-            return redirect()->route('user_login')
-                ->with('success', 'Password berhasil direset! Silakan login dengan password baru.');
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('user_login')->with('success', 'Password berhasil direset')
+            : back()->withErrors(['email' => 'Token tidak valid']);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN
+    |--------------------------------------------------------------------------
+    */
+
+    public function showForgotAdmin()
+    {
+        return view('auth.admin.forgot');
+    }
+
+    public function sendResetLinkAdmin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $admin = User::where('email', $request->email)
+            ->where('role', 'admin')
+            ->first();
+
+        if (!$admin) {
+            return back()->withErrors(['email' => 'Email bukan admin']);
         }
 
-        return back()->withErrors(['email' => 'Link reset tidak valid atau sudah kadaluarsa.']);
+        $status = Password::broker('users')->sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('success', 'Link reset admin dikirim')
+            : back()->withErrors(['email' => 'Gagal kirim email']);
+    }
+
+    public function showResetAdmin(Request $request, $token)
+    {
+        return view('auth.admin.reset', [
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
+
+    public function resetAdmin(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $status = Password::broker('users')->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+
+                if ($user->role !== 'admin') {
+                    return;
+                }
+
+                $user->password = Hash::make($password);
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('admin.login')->with('success', 'Password admin berhasil direset')
+            : back()->withErrors(['email' => 'Token tidak valid']);
     }
 }
