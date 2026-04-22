@@ -3,114 +3,115 @@
 
 @include('auth.admin.partials.head')
 
-<body>
+<body class="bg-gray-100 text-gray-800">
 
-    <div id="layout-wrapper">
+    <div class="flex min-h-screen">
 
-        @include('auth.admin.partials.header')
+        <!-- ================= SIDEBAR ================= -->
+        <aside id="sidebar"
+            class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-blue-900 to-blue-700 text-white flex flex-col transition-all duration-300 z-50">
 
-        <div class="vertical-menu">
-            <div data-simplebar class="h-100">
-
-                <div id="sidebar-menu">
-
-                    <ul class="metismenu list-unstyled" id="side-menu">
-
-                        <li class="menu-title">Menu Utama</li>
-
-                        <li>
-                            <a href="{{ route('auth.admin.dashboard.index') }}"
-                                class="{{ request()->routeIs('auth.admin.dashboard.*') ? 'active' : '' }}"
-                                data-title="Dashboard">
-                                <i class="bx bx-home-circle"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ route('auth.admin.pengaduan.index') }}"
-                                class="{{ request()->routeIs('auth.admin.pengaduan.*') ? 'active' : '' }}"
-                                data-title="Pengaduan">
-                                <i class="bx bx-message-square-dots"></i>
-                                <span>Pengaduan</span>
-                            </a>
-                        </li>
-
-                        @if(Auth::user()->level_id == '1')
-
-                            <li>
-                                <a href="{{ route('auth.admin.masyarakat.index') }}"
-                                    class="{{ request()->routeIs('auth.admin.masyarakat.*') ? 'active' : '' }}"
-                                    data-title="Masyarakat">
-                                    <i class="bx bx-group"></i>
-                                    <span>Masyarakat</span>
-                                </a>
-                            </li>
-
-                            <li class="menu-title">Administrator</li>
-
-                            <li>
-                                <a href="javascript:void(0);" class="has-arrow" data-title="User">
-                                    <i class="bx bx-user"></i>
-                                    <span>Manajemen User</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ url('admin/report/day') }}" data-title="Laporan">
-                                    <i class="bx bx-bar-chart-alt-2"></i>
-                                    <span>Laporan</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('auth.admin.content.index') }}" data-title="Konten">
-                                    <i class="bx bx-file"></i>
-                                    <span>Konten</span>
-                                </a>
-                            </li>
-
-                        @endif
-
-                    </ul>
-
-                </div>
-
+            <!-- LOGO -->
+            <div class="p-5 text-lg font-bold border-b border-white/10">
+                <span class="logo-text">LAPORPPA-KBB</span>
             </div>
-        </div>
 
-        <div class="main-content">
+            <!-- MENU -->
+            <nav class="p-3 space-y-2 flex-1">
 
-            <div class="page-content d-flex flex-column">
+                <a href="{{ route('auth.admin.dashboard.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10
+                {{ request()->routeIs('auth.admin.dashboard.*') ? 'bg-white/20' : '' }}">
+                    <i class="bx bx-home text-lg"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
 
-                <div class="content-wrapper flex-grow-1">
-                    @yield('content')
-                </div>
+                <a href="{{ route('auth.admin.pengaduan.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10">
+                    <i class="bx bx-message text-lg"></i>
+                    <span class="menu-text">Pengaduan</span>
+                </a>
 
-                <!-- 🔥 FOOTER FIX TOTAL -->
-                <footer class="footer px-4 py-3 d-flex justify-content-between">
-                    <div>© {{ date('Y') }} <strong>Laporppa</strong></div>
-                    <div>Sistem Pengaduan Masyarakat</div>
-                </footer>
+                <a href="{{ route('auth.admin.masyarakat.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10">
+                    <i class="bx bx-group text-lg"></i>
+                    <span class="menu-text">Masyarakat</span>
+                </a>
 
-            </div>
+                <a href="{{ route('auth.admin.content.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10">
+                    <i class="bx bx-file text-lg"></i>
+                    <span class="menu-text">Konten</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- ================= OVERLAY (MOBILE) ================= -->
+        <div id="overlay" class="fixed inset-0 bg-black/40 hidden z-40"></div>
+
+        <!-- ================= MAIN ================= -->
+        <div id="mainContent" class="flex-1 ml-64 transition-all duration-300">
+
+            @include('auth.admin.partials.header') {{-- WAJIB ADA id="topbar" di header --}}
+
+            <main class="mt-16 p-6">
+                @yield('content')
+            </main>
 
         </div>
 
     </div>
 
-    @include('auth.admin.partials.script')
-
+    <!-- ================= SCRIPT ================= -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
 
-            const toggleBtn = document.getElementById("vertical-menu-btn");
+            const btn = document.getElementById("vertical-menu-btn");
+            const sidebar = document.getElementById("sidebar");
+            const main = document.getElementById("mainContent");
+            const topbar = document.getElementById("topbar"); // dari header
+            const overlay = document.getElementById("overlay");
 
-            if (toggleBtn) {
-                toggleBtn.addEventListener("click", function () {
-                    document.body.classList.toggle("sidebar-collapsed");
-                });
-            }
+            let collapsed = false;
+
+            btn.addEventListener("click", function() {
+
+                // ================= MOBILE =================
+                if (window.innerWidth < 768) {
+                    sidebar.classList.toggle("-translate-x-full");
+                    overlay.classList.toggle("hidden");
+                    return;
+                }
+
+                // ================= DESKTOP =================
+                collapsed = !collapsed;
+
+                if (collapsed) {
+                    sidebar.classList.replace("w-64", "w-20");
+                    main.classList.replace("ml-64", "ml-20");
+                    topbar.classList.replace("left-64", "left-20");
+
+                    document.querySelectorAll(".menu-text").forEach(el => el.classList.add("hidden"));
+                    document.querySelector(".logo-text").classList.add("hidden");
+
+                } else {
+                    sidebar.classList.replace("w-20", "w-64");
+                    main.classList.replace("ml-20", "ml-64");
+                    topbar.classList.replace("left-20", "left-64");
+
+                    document.querySelectorAll(".menu-text").forEach(el => el.classList.remove("hidden"));
+                    document.querySelector(".logo-text").classList.remove("hidden");
+                }
+
+            });
+
+            // ================= CLOSE MOBILE =================
+            overlay.addEventListener("click", function() {
+                sidebar.classList.add("-translate-x-full");
+                overlay.classList.add("hidden");
+            });
 
         });
     </script>

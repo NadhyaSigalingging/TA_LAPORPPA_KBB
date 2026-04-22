@@ -1,335 +1,295 @@
 @extends('auth.admin.layouts.main')
-@section('title', 'Dashboard | Laporppa')
+@section('title', 'Dashboard')
 
 @section('content')
 
-    <style>
-        /* ================= WRAPPER ================= */
-        .dashboard-wrapper {
-            width: 100%;
-        }
+<div class="space-y-6">
 
-        /* TITLE */
-        .dashboard-title {
-            font-weight: 700;
-            color: #0B3C91;
-        }
+    <!-- ================= WELCOME ================= -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-2xl shadow flex justify-between">
+        <div>
+            <h2 class="text-xl font-bold">
+                Selamat Datang, {{ Auth::user()->username }} 👋
+            </h2>
+            <p class="text-sm text-blue-100">
+                {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}
+            </p>
+        </div>
+        <div class="text-right">
+            <p class="text-sm">Total User</p>
+            <b class="text-lg">{{ $totalUser }}</b>
+        </div>
+    </div>
 
-        .dashboard-subtitle {
-            color: #6b7280;
-            margin-bottom: 20px;
-        }
+    <!-- ================= STAT ================= -->
+    <div class="grid md:grid-cols-4 gap-5">
 
-        /* ================= CARD ================= */
-        .card-modern {
-            background: white;
-            border-radius: 18px;
-
-            /* 🔥 FIX UTAMA */
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.04);
-
-            transition: 0.3s;
-        }
-
-        .card-modern:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        /* HEADER */
-        .card-header-modern {
-            background: linear-gradient(135deg, #0B3C91, #1E5ED7);
-            padding: 18px;
-            color: white;
-        }
-
-        /* BODY */
-        .card-body-modern {
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* AVATAR */
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-        }
-
-        /* ================= STAT ================= */
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-
-            /* 🔥 FIX */
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.04);
-
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            transition: 0.25s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        /* TEXT */
-        .stat-title {
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        .stat-value {
-            color: #0B3C91;
-            font-weight: 700;
-        }
-
-        /* ICON */
-        .icon-box {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #1E5ED7, #0B3C91);
-            border-radius: 10px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* FILTER */
-        .year-filter {
-            max-width: 200px;
-        }
-
-        /* CHART */
-        .chart-card {
-            margin-top: 15px;
-            padding: 25px;
-
-            /* 🔥 FIX */
-            border: 1px solid #e5e7eb;
-        }
-
-        .chart-title {
-            font-weight: 600;
-            color: #0B3C91;
-        }
-
-        /* ================= DARK MODE ================= */
-        body.dark-mode .card-modern,
-        body.dark-mode .stat-card,
-        body.dark-mode .chart-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            /* 🔥 penting */
-        }
-
-        body.dark-mode .dashboard-title {
-            color: #e5e7eb;
-        }
-
-        body.dark-mode .dashboard-subtitle {
-            color: #94a3b8;
-        }
-
-        body.dark-mode .stat-title {
-            color: #cbd5f5;
-        }
-
-        body.dark-mode .stat-value {
-            color: #60a5fa;
-        }
-
-        body.dark-mode .chart-title {
-            color: #e5e7eb;
-        }
-    </style>
-
-    <div class="dashboard-wrapper pb-5">
-
-        <!-- HEADER -->
-        <h3 class="dashboard-title">Dashboard</h3>
-        <p class="dashboard-subtitle">
-            Ringkasan sistem pengaduan masyarakat
-        </p>
-
-        <!-- ALERT -->
-        @if ($message = Session::get('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm">
-                {{$message}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        <div class="row g-4">
-
-            <!-- PROFILE -->
-            <div class="col-xl-4">
-                <div class="card-modern">
-
-                    <div class="card-header-modern">
-                        <h5 style="margin:0;">Selamat Datang 👋</h5>
-                        <small>Sistem Pengaduan Masyarakat</small>
-                    </div>
-
-                    <div class="card-body-modern">
-                        <img src="{{url('avatar/' . Auth::user()->photo)}}" class="avatar">
-
-                        <h5>{{Auth::user()->username}}</h5>
-                        <small style="color:#6b7280;">Administrator</small>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- STATS -->
-            <div class="col-xl-8">
-                <div class="row g-3">
-
-                    @php
-                        $cards = [
-                            ['title' => 'Pengaduan', 'value' => $complaints, 'icon' => 'bx-copy-alt'],
-                            ['title' => 'Belum Diproses', 'value' => $unprocessed, 'icon' => 'bx-time'],
-                            ['title' => 'Proses', 'value' => $process, 'icon' => 'bx-loader'],
-                            ['title' => 'Selesai', 'value' => $finished, 'icon' => 'bx-check'],
-                            ['title' => 'User', 'value' => $users, 'icon' => 'bx-user'],
-                            ['title' => 'Masyarakat', 'value' => $society, 'icon' => 'bx-group'],
-                        ];
-                    @endphp
-
-                    @foreach($cards as $c)
-                        <div class="col-md-4">
-                            <div class="stat-card">
-
-                                <div>
-                                    <small style="color:#64748b;">
-                                        {{$c['title']}}
-                                    </small>
-                                    <h4 style="margin:0; color:#0B3C91;">
-                                        {{$c['value']}}
-                                    </h4>
-                                </div>
-
-                                <div class="icon-box">
-                                    <i class="bx {{$c['icon']}}"></i>
-                                </div>
-
-                            </div>
-                        </div>
-                    @endforeach
-
-                </div>
-            </div>
-
+        <div class="card">
+            <p>Total Pengaduan</p>
+            <h2 class="text-blue-600">{{ $totalPengaduan }}</h2>
         </div>
 
-        <!-- FILTER -->
-        <form method="GET" class="mt-4 mb-3">
-            <select name="year" class="form-select year-filter shadow-sm" onchange="this.form.submit()">
+        <div class="card">
+            <p>Belum Diproses</p>
+            <h2 class="text-red-500">{{ $belum }}</h2>
+        </div>
 
-                @for ($y = date('Y'); $y >= 2020; $y--)
-                    <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>
-                        {{ $y }}
-                    </option>
-                @endfor
+        <div class="card">
+            <p>Sedang Diproses</p>
+            <h2 class="text-yellow-500">{{ $diproses }}</h2>
+        </div>
 
-            </select>
-        </form>
-
-        <!-- CHART -->
-        <div class="card-modern chart-card">
-
-            <h5 class="chart-title">
-                Grafik Pengaduan Tahun {{ $year }}
-            </h5>
-
-            <div style="height:380px;">
-                <canvas id="chartPengaduan"></canvas>
-            </div>
-
+        <div class="card">
+            <p>Selesai</p>
+            <h2 class="text-green-500">{{ $selesai }}</h2>
         </div>
 
     </div>
 
-@endsection
+    <!-- ================= CHART ================= -->
+    <div class="grid lg:grid-cols-3 gap-6">
 
+        <!-- LINE -->
+        <div class="lg:col-span-2 box">
+            <h3 class="title">
+                Grafik Pengaduan Tahun {{ $tahun }}
+            </h3>
+
+            <div class="h-[320px]">
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+
+        <!-- PIE -->
+        <div class="box">
+            <h3 class="title">
+                Distribusi Status
+            </h3>
+
+            <div class="h-[320px] relative">
+                <canvas id="pie"></canvas>
+            </div>
+
+            <!-- LEGEND -->
+            <div class="mt-4 space-y-2 text-sm">
+
+                <div class="flex justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                        Selesai
+                    </span>
+                    <b>{{ $selesai }}</b>
+                </div>
+
+                <div class="flex justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                        Diproses
+                    </span>
+                    <b>{{ $diproses }}</b>
+                </div>
+
+                <div class="flex justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                        Belum
+                    </span>
+                    <b>{{ $belum }}</b>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
+            <h3 class="font-semibold text-gray-700">Data Pengaduan</h3>
+            <span class="text-sm text-gray-500">
+                Total: {{ $dataPengaduan->total() }}
+            </span>
+        </div>
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full text-sm border-separate border-spacing-y-2">
+
+                <thead class="text-xs text-gray-500 uppercase">
+                    <tr>
+                        <th class="px-4 py-3 text-center">No</th>
+                        <th class="px-4 py-3">Nama Pelapor</th>
+                        <th class="px-4 py-3">Nama Korban</th>
+                        <th class="px-4 py-3 text-center">Jenis</th>
+                        <th class="px-4 py-3">Alamat Kejadian</th>
+                        <th class="px-4 py-3 text-center">Status</th>
+                        <th class="px-4 py-3 text-center">Tanggal</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse($dataPengaduan as $i => $d)
+                    <tr class="bg-white shadow-sm rounded-xl hover:shadow-md transition">
+
+                        <!-- NO -->
+                        <td class="px-4 py-4 text-center text-gray-500">
+                            {{ $dataPengaduan->firstItem() + $i }}
+                        </td>
+
+                        <!-- PELAPOR -->
+                        <td class="px-4 py-4">
+                            <div class="flex items-center gap-3">
+
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold">
+                                    {{ strtoupper(substr($d->society->name ?? 'U', 0, 1)) }}
+                                </div>
+
+                                <div>
+                                    <p class="font-semibold text-gray-800">
+                                        {{ $d->society->name ?? '-' }}
+                                    </p>
+                                    <p class="text-xs text-gray-400">
+                                        NIK: {{ $d->nik }}
+                                    </p>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <!-- KORBAN -->
+                        <td class="px-4 py-4 font-medium text-gray-700">
+                            {{ $d->nama_korban ?? '-' }}
+                        </td>
+
+                        <!-- JENIS -->
+                        <td class="px-4 py-4 text-center">
+                            <span class="badge-jenis">
+                                {{ ucfirst($d->jenis_kekerasan) }}
+                            </span>
+                        </td>
+
+                        <!-- ALAMAT -->
+                        <td class="px-4 py-4 text-gray-500">
+                            <div class="max-w-[250px] truncate">
+                                {{ $d->alamat_korban }}
+                            </div>
+                        </td>
+
+                        <!-- STATUS -->
+                        <td class="px-4 py-4 text-center">
+                            @if($d->status == 'finished')
+                            <span class="badge-success">Selesai</span>
+                            @elseif($d->status == 'process')
+                            <span class="badge-warning">Diproses</span>
+                            @elseif($d->status == 'rejected')
+                            <span class="badge-danger">Ditolak</span>
+                            @else
+                            <span class="badge-danger">Belum</span>
+                            @endif
+                        </td>
+
+                        <!-- TANGGAL -->
+                        <td class="px-4 py-4 text-center text-gray-500">
+                            {{ \Carbon\Carbon::parse($d->date_complaint)->translatedFormat('d M Y') }}
+                        </td>
+
+                    </tr>
+
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-10 text-gray-400">
+                            Tidak ada data
+                        </td>
+                    </tr>
+                    @endforelse
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="px-6 py-4 border-t bg-gray-50">
+            {{ $dataPengaduan->links() }}
+        </div>
+
+    </div>
+
+</div>
+
+@endsection
 
 @push('script')
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
 
-            const ctx = document.getElementById('chartPengaduan').getContext('2d');
+        // ================= LINE =================
+        const line = document.getElementById('chart');
 
-            // GRADIENT
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, "#1E5ED7");
-            gradient.addColorStop(1, "#60A5FA");
-
-            new Chart(ctx, {
-                type: 'bar',
+        if (line) {
+            new Chart(line, {
+                type: 'line',
                 data: {
-                    labels: {!! json_encode($labels) !!},
+                    labels: @json($labels),
                     datasets: [{
                         label: 'Jumlah Pengaduan',
-                        data: {!! json_encode($data) !!},
-                        backgroundColor: gradient,
-                        borderRadius: 12,
-                        barThickness: 45,
-                        hoverBackgroundColor: "#0B3C91"
+                        data: @json($data),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.2)',
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: false
+                }
+            });
+        }
 
+        // ================= PIE =================
+        const pie = document.getElementById('pie');
+
+        if (pie) {
+
+            let dataPie = @json($statusChart);
+
+            // 🔥 fallback kalau kosong
+            if (dataPie.every(v => v === 0)) {
+                dataPie = [1, 0, 0];
+            }
+
+            new Chart(pie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Selesai', 'Diproses', 'Belum'],
+                    datasets: [{
+                        data: dataPie,
+                        backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '65%',
                     plugins: {
                         legend: {
-                            labels: {
-                                color: '#374151',
-                                font: { size: 13, weight: '600' }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#0B3C91',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            padding: 12,
-                            cornerRadius: 10
+                            display: true,
+                            position: 'bottom'
                         }
-                    },
-
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#6b7280' }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#6b7280', stepSize: 1 },
-                            grid: {
-                                color: '#e5e7eb',
-                                borderDash: [4, 4]
-                            }
-                        }
-                    },
-
-                    animation: {
-                        duration: 1200,
-                        easing: 'easeOutQuart'
                     }
                 }
             });
 
-        });
-    </script>
+        } else {
+            console.error("Pie chart tidak ditemukan");
+        }
+
+    });
+</script>
 
 @endpush

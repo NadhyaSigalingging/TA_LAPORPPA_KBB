@@ -6,15 +6,40 @@
 <script src="{{asset('assets/js/app.js')}}"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
 
-        /* ================= SIDEBAR TOGGLE ================= */
+        /* ================= SIDEBAR TOGGLE (TAILWIND FIX) ================= */
         const sidebarBtn = document.getElementById("vertical-menu-btn");
+        const sidebar = document.getElementById("sidebar");
+        const main = document.getElementById("mainContent");
+        const topbar = document.getElementById("topbar");
 
-        if (sidebarBtn) {
-            sidebarBtn.addEventListener("click", function () {
-                document.body.classList.toggle("sidebar-collapsed");
+        if (sidebarBtn && sidebar && main && topbar) {
+
+            sidebarBtn.addEventListener("click", function() {
+
+                // toggle width
+                sidebar.classList.toggle("w-20");
+                sidebar.classList.toggle("w-64");
+
+                // main adjust
+                main.classList.toggle("ml-20");
+                main.classList.toggle("ml-64");
+
+                // header adjust
+                topbar.classList.toggle("left-20");
+                topbar.classList.toggle("left-64");
+
+                // hide text
+                document.querySelectorAll(".menu-text").forEach(el => {
+                    el.classList.toggle("hidden");
+                });
+
+                const logo = document.querySelector(".logo-text");
+                if (logo) logo.classList.toggle("hidden");
+
             });
+
         }
 
 
@@ -22,7 +47,7 @@
         const fullscreenBtn = document.getElementById("fullscreen-btn");
 
         if (fullscreenBtn) {
-            fullscreenBtn.addEventListener("click", function () {
+            fullscreenBtn.addEventListener("click", function() {
 
                 if (!document.fullscreenElement) {
                     document.documentElement.requestFullscreen();
@@ -34,41 +59,39 @@
         }
 
 
-        /* ================= DARK MODE ================= */
+        /* ================= DARK MODE (TAILWIND STYLE) ================= */
         const themeBtn = document.getElementById('theme-toggle');
 
         if (themeBtn) {
 
-            // toggle mode
-            themeBtn.addEventListener('click', function () {
+            themeBtn.addEventListener('click', function() {
 
-                document.body.classList.toggle('dark-mode');
+                document.documentElement.classList.toggle('dark');
 
-                const isDark = document.body.classList.contains('dark-mode');
+                const isDark = document.documentElement.classList.contains('dark');
 
-                // simpan ke localStorage
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
 
-                // ganti icon
-                themeBtn.innerHTML = isDark
-                    ? '<i class="bx bx-sun"></i>'
-                    : '<i class="bx bx-moon"></i>';
+                themeBtn.innerHTML = isDark ?
+                    '<i class="bx bx-sun"></i>' :
+                    '<i class="bx bx-moon"></i>';
             });
 
-            // load state awal
+            // LOAD THEME
             if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark');
                 themeBtn.innerHTML = '<i class="bx bx-sun"></i>';
             }
 
         }
 
 
-        /* ================= DATATABLE ================= */
+        /* ================= DATATABLE FIX ================= */
         if (window.jQuery && $.fn.DataTable) {
 
-            $('.datatable').each(function () {
+            $('.datatable').each(function() {
 
+                // destroy dulu kalau sudah ada
                 if ($.fn.DataTable.isDataTable(this)) {
                     $(this).DataTable().destroy();
                 }
@@ -78,6 +101,7 @@
                     responsive: true,
                     pageLength: 5,
                     lengthMenu: [5, 10, 25],
+                    autoWidth: false,
                     language: {
                         search: "Cari:",
                         lengthMenu: "Tampilkan _MENU_ data",
@@ -93,7 +117,25 @@
             });
 
         } else {
-            console.warn("DataTable / jQuery belum ke-load");
+            console.warn("❌ DataTable / jQuery belum ke-load");
+        }
+
+
+        /* ================= PROFILE DROPDOWN ================= */
+        const profileBtn = document.getElementById("profileBtn");
+        const profileMenu = document.getElementById("profileMenu");
+
+        if (profileBtn && profileMenu) {
+
+            profileBtn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                profileMenu.classList.toggle("hidden");
+            });
+
+            document.addEventListener("click", function() {
+                profileMenu.classList.add("hidden");
+            });
+
         }
 
     });

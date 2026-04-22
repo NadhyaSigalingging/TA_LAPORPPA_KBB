@@ -6,31 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use App\Models\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ComplaintController extends Controller
 {
     // =====================
-    // LIST DATA + FILTER
+    // LIST + SEARCH + PAGINATION
     // =====================
     public function index(Request $request)
     {
-        $query = Complaint::with(['society', 'response.admin']);
+        $query = Complaint::with(['society']);
 
-        if ($request->filled('nik')) {
-            $query->where('nik', 'like', '%' . $request->nik . '%');
-        }
+        // 🔍 SEARCH
+        if ($request->filled('search')) {
+            $search = $request->search;
 
-        if ($request->filled('nama')) {
-            $query->whereHas('society', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->nama . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('nik', 'like', "%$search%")
+                    ->orWhere('nama_korban', 'like', "%$search%")
+                    ->orWhereHas('society', function ($s) use ($search) {
+                        $s->where('name', 'like', "%$search%");
+                    });
             });
         }
 
-        if ($request->filled('kategori')) {
-            $query->where('jenis_kekerasan', $request->kategori);
-        }
-
-        $complaints = $query->latest()->get();
+        $complaints = $query
+            ->latest('date_complaint')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('auth.admin.pengaduan.index', compact('complaints'));
     }
@@ -42,26 +46,25 @@ class ComplaintController extends Controller
     {
         $complaint->load([
             'society',
-            'response.admin'
+            'response.admin' // WAJIB biar bukti kebaca
         ]);
 
         return view('auth.admin.pengaduan.show', compact('complaint'));
     }
 
     // =====================
-    // EDIT (AUTO ASSIGN ADMIN)
+    // EDIT (AUTO RESPONSE)
     // =====================
     public function edit(Complaint $complaint)
     {
         $complaint->load(['society', 'response.admin']);
 
-        // Jika belum ada response → assign admin login
+        // 🔥 Auto create response jika belum ada
         if (!$complaint->response) {
-            Response::create([
-                'complaint_id' => $complaint->id,
-                'admin_id'     => auth()->id(),
-                'response'     => null,
-                'bukti'        => null,
+            $complaint->response()->create([
+                'admin_id' => auth()->id(),
+                'response' => null,
+                'bukti'    => null,
             ]);
 
             $complaint->load('response.admin');
@@ -81,47 +84,64 @@ class ComplaintController extends Controller
             'bukti'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
-        // Update status laporan
-        $complaint->update([
-            'status' => $request->status
-        ]);
+        DB::beginTransaction();
 
-        // Ambil atau buat response jika belum ada
-        $response = Response::firstOrCreate(
-            ['complaint_id' => $complaint->id],
-            [
-                'admin_id' => auth()->id()
-            ]
-        );
+        try {
 
-        // Upload bukti jika ada
-        if ($request->hasFile('bukti')) {
-            $fileName = time() . '_' . $request->file('bukti')->getClientOriginalName();
-            $request->file('bukti')->move(public_path('bukti_laporan'), $fileName);
+            // update status complaint
+            $complaint->update([
+                'status' => $request->status
+            ]);
 
-            $response->bukti = $fileName;
+            // ambil / buat response
+            $response = Response::firstOrCreate(
+                ['complaint_id' => $complaint->id],
+                ['admin_id' => auth()->id()]
+            );
+
+            // 📸 Upload bukti (pakai Storage - BEST PRACTICE)
+            if ($request->hasFile('bukti')) {
+
+                // hapus file lama jika ada
+                if ($response->bukti && Storage::disk('public')->exists($response->bukti)) {
+                    Storage::disk('public')->delete($response->bukti);
+                }
+
+                $path = $request->file('bukti')->store('bukti_laporan', 'public');
+
+                $response->bukti = $path;
+            }
+
+            // update response
+            $response->update([
+                'response' => $request->response,
+                'admin_id' => $response->admin_id ?? auth()->id()
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', 'Respon berhasil disimpan');
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        // Update isi response (admin tidak berubah jika sudah ada)
-        $response->update([
-            'response' => $request->response,
-        ]);
-
-        return back()->with('success', 'Respon berhasil disimpan');
     }
 
     // =====================
-    // UPDATE STATUS VIA BUTTON
+    // UPDATE STATUS CEPAT
     // =====================
     public function updateStatus(Complaint $complaint, $status)
     {
-        $allowedStatus = ['process', 'finished', 'rejected'];
-        abort_unless(in_array($status, $allowedStatus), 404);
+        $allowed = ['process', 'finished', 'rejected'];
+
+        abort_unless(in_array($status, $allowed), 404);
 
         $complaint->update([
             'status' => $status
         ]);
 
-        return back()->with('success', 'Status pengaduan berhasil diperbarui');
+        return back()->with('success', 'Status berhasil diperbarui');
     }
 }

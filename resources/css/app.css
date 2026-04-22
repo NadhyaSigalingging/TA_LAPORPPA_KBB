@@ -1,11 +1,255 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* ================= GLOBAL ================= */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f9fafb;
+    color: #111827;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* ================= CARD ================= */
+.card {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ================= BOX ================= */
+.box {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ================= TABLE ================= */
+.table {
+    width: 100%;
+    font-size: 14px;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #f9fafb;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* ================= AVATAR ================= */
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: #dbeafe;
+    color: #2563eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+/* ================= INPUT ================= */
+.input {
+    border: 1px solid #e5e7eb;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: 0.2s;
+    outline: none;
+}
+
+.input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* ================= BUTTON ================= */
+.btn {
+    background: #2563eb;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+/* ================= BADGE STATUS ================= */
+.badge-green {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-yellow {
+    background: #fef9c3;
+    color: #ca8a04;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-red {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* ================= BADGE JENIS ================= */
+.badge-gray {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+/* ================= TEXT HELPERS ================= */
+.text-muted {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.truncate-text {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ================= TABLE FIX SPACING ================= */
+table td,
+table th {
+    line-height: 1.4;
+}
+
+/* ================= GLOBAL TRANSITION ================= */
+* {
+    transition: all 0.15s ease;
+}
+/* ================= BADGE STATUS ================= */
+.badge-success {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.badge-warning {
+    background: #fef9c3;
+    color: #ca8a04;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+/* BADGE JENIS */
+.badge-jenis {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+.btn-view {
+    background: #dbeafe;
+    color: #2563eb;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+.btn-view:hover {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-edit {
+    background: #fef3c7;
+    color: #b45309;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.btn-edit:hover {
+    background: #b45309;
+    color: white;
+}
+/* ICON BUTTON BASE */
+.icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+/* VIEW */
+.icon-blue {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.icon-blue:hover {
+    background: #2563eb;
+    color: white;
+}
+
+/* EDIT */
+.icon-yellow {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.icon-yellow:hover {
+    background: #d97706;
+    color: white;
 }
