@@ -150,7 +150,6 @@
                             </button>
                         </div>
 
-                        <!-- 🔥 TAMBAHAN WARNING -->
                         @if(session('error'))
                         <p class="text-red-400 text-sm text-center">
                             {{ session('error') }}
@@ -194,10 +193,7 @@
             input.type = input.type === 'password' ? 'text' : 'password';
         }
     </script>
-
-    <!-- 🔥 POPUP ERROR -->
     
-
 </body>
 
 </html>

@@ -48,7 +48,7 @@ class User extends Authenticatable
 
     /*
     |--------------------------------------------------------------------------
-    | 🔥 OVERRIDE RESET PASSWORD (INI KUNCI)
+    | OVERRIDE RESET PASSWORD 
     |--------------------------------------------------------------------------
     */
     public function sendPasswordResetNotification($token)

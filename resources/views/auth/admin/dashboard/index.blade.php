@@ -5,7 +5,6 @@
 
 <div class="space-y-6">
 
-    <!-- ================= WELCOME ================= -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-2xl shadow flex justify-between">
         <div>
             <h2 class="text-xl font-bold">

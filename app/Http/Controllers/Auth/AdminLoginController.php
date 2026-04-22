@@ -31,7 +31,6 @@ class AdminLoginController extends Controller
     */
     public function login(Request $request)
     {
-        // ✅ VALIDASI INDONESIA
         $request->validate([
             'username' => 'required',
             'password' => 'required',
@@ -40,11 +39,10 @@ class AdminLoginController extends Controller
             'password.required' => 'Password wajib diisi',
         ]);
 
-        // ✅ FILTER LANGSUNG ADMIN (INI YANG PALING PENTING)
         $credentials = [
             'username' => $request->username,
             'password' => $request->password,
-            'role' => 'admin' // 🔥 hanya admin yang bisa login
+            'role' => 'admin' 
         ];
 
         if (Auth::attempt($credentials)) {
@@ -53,7 +51,6 @@ class AdminLoginController extends Controller
 
             $user = Auth::user();
 
-            // 🔒 CEK STATUS SAJA (ROLE SUDAH TERFILTER)
             if ($user->status !== 'active') {
                 Auth::logout();
                 return back()->with('error', 'Akun Anda belum disetujui')->withInput();
@@ -63,7 +60,6 @@ class AdminLoginController extends Controller
                 ->with('success', 'Selamat datang kembali, ' . $user->username);
         }
 
-        // ❌ GAGAL LOGIN
         return back()->with('error', 'Username atau password salah')->withInput();
     }
 
@@ -99,8 +95,8 @@ class AdminLoginController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',     // 🔥 tetap admin
-            'status' => 'pending'  // 🔥 harus di-approve
+            'role' => 'admin',    
+            'status' => 'pending'  
         ]);
 
         return redirect()->route('admin.pending')

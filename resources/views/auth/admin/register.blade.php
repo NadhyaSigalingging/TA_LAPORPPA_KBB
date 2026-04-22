@@ -38,7 +38,6 @@
         <!-- LEFT -->
         <div class="relative z-10 min-h-screen flex">
 
-            <!-- LEFT (TIDAK DIHAPUS) -->
             <div class="hidden lg:flex w-1/2 flex-col justify-center px-16 space-y-6">
 
                 <h1 class="text-5xl font-bold">
@@ -88,7 +87,6 @@
 
             </div>
 
-            <!-- RIGHT -->
             <div class="w-full lg:w-1/2 flex items-center justify-center px-6">
 
                 <div class="w-full max-w-md">
@@ -202,7 +200,6 @@
         </div>
 
         <script>
-            // toggle password
             function togglePassword(id) {
                 const input = document.getElementById(id);
                 input.type = input.type === 'password' ? 'text' : 'password';
