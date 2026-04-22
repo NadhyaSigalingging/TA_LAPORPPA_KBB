@@ -237,11 +237,11 @@ class FrontendController extends Controller
 }
   
     public function logout()
-    {
-        Session::flush();
-        return redirect()->route('user_login')
-            ->with('success', 'Logout berhasil.');
-    }
+{
+    Session::flush();
+    return redirect()->route('home_public')  
+        ->with('success', 'Logout berhasil.');
+}
 
     public function complaint()
     {
