@@ -35,6 +35,11 @@
     }
     .table-card-header h5 { margin: 0; font-size: 15px; font-weight: 700; color: #1a1a2e; }
 
+    #datatable {
+        table-layout: fixed;
+        width: 100% !important;
+    }
+
     #datatable thead th {
         background: #f8f0f5 !important;
         color: #1a1a2e !important;
@@ -42,33 +47,45 @@
         text-align: center;
         vertical-align: middle;
         border-bottom: 2px solid rgba(216,145,181,0.3) !important;
-        padding: 14px 12px;
-        font-size: 13.5px;
+        padding: 14px 8px;
+        font-size: 13px;
+        white-space: normal;
+        word-break: break-word;
     }
     #datatable tbody td {
         vertical-align: middle;
         text-align: center;
-        padding: 13px 12px;
-        font-size: 13.5px;
+        padding: 12px 8px;
+        font-size: 13px;
         border-bottom: 1px solid #f5f0f5;
         color: #1a1a2e;
+        white-space: normal;
+        word-break: break-word;
     }
     #datatable tbody tr { transition: background 0.2s; }
     #datatable tbody tr:hover { background-color: #fdf8fc; }
+
+    .table-responsive {
+        overflow-x: visible !important;
+    }
+    .dataTables_wrapper {
+        overflow-x: visible !important;
+    }
 
     .btn-detail {
         background: linear-gradient(135deg, #1a1a2e, #16213e);
         color: white;
         border: none;
-        padding: 6px 16px;
+        padding: 6px 14px;
         border-radius: 50px;
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 500;
         transition: all 0.2s;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 5px;
+        white-space: nowrap;
     }
     .btn-detail:hover {
         transform: translateY(-2px);
@@ -141,6 +158,7 @@
         box-shadow: 0 4px 14px rgba(184,97,142,0.3);
         text-decoration: none;
         display: inline-flex; align-items: center; gap: 8px;
+        white-space: nowrap;
     }
     .btn-buat-laporan:hover {
         transform: translateY(-2px);
@@ -155,15 +173,15 @@
 
     @media (max-width: 768px) {
         #datatable thead th,
-        #datatable tbody td { font-size: 12px; padding: 10px 8px; }
+        #datatable tbody td { font-size: 11px; padding: 8px 5px; }
         .table-card-header { padding: 14px 16px; flex-direction: column; align-items: flex-start; }
+        .btn-buat-laporan { font-size: 13px; padding: 9px 18px; }
     }
 </style>
 @endsection
 
 @section('content')
 
-{{-- Hero --}}
 <x-hero
     title="Riwayat Laporan Anda"
     subtitle="Pantau status semua laporan yang telah Anda buat"
@@ -185,46 +203,46 @@
         <div class="card-body p-4">
             @if($complaint->count() > 0)
                 <div class="table-responsive">
-                    <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
+                    <table id="datatable" class="table table-bordered w-100">
                         <thead>
                             <tr>
-                                <th style="min-width:60px;">No</th>
-<th style="min-width:170px;">Kode Laporan</th>
-<th style="min-width:120px;">Tanggal</th>
-<th style="min-width:180px;">Nama Korban</th>
-<th style="min-width:160px;">Jenis Kekerasan</th>
-<th style="min-width:180px;">Status</th>
-<th style="min-width:120px;">Aksi</th>
+                                <th style="width:5%;">No</th>
+                                <th style="width:18%;">Kode Laporan</th>
+                                <th style="width:12%;">Tanggal</th>
+                                <th style="width:18%;">Nama Korban</th>
+                                <th style="width:17%;">Jenis Kekerasan</th>
+                                <th style="width:18%;">Status</th>
+                                <th style="width:12%;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($complaint as $row)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-<td>
-    <span style="background:#1a1a2e; color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; letter-spacing:0.5px;">
-        {{ $row->unique_code ?? '-' }}
-    </span>
-</td>
-<td>{{ date('d/m/Y', strtotime($row->created_at)) }}</td>
-<td>{{ $row->nama_korban ?? '-' }}</td>
-<td>
-    @if($row->jenis_kekerasan)
-        <span style="background:#e8f4fd; color:#1a5276; padding:4px 12px; border-radius:50px; font-size:12px; font-weight:600;">
-            {{ ucfirst($row->jenis_kekerasan) }}
-        </span>
-    @else
-        <span class="text-muted">-</span>
-    @endif
-</td>
-<td>
-    <x-status-badge status="{{ $row->status }}" />
-</td>
-<td>
-    <a href="{{ url('user/complaint/detail/'.$row->id) }}" class="btn-detail">
-        <i class="fas fa-eye"></i> Detail
-    </a>
-</td>
+                                <td>
+                                    <span style="background:#1a1a2e; color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; letter-spacing:0.5px; display:inline-block;">
+                                        {{ $row->unique_code ?? '-' }}
+                                    </span>
+                                </td>
+                                <td>{{ date('d/m/Y', strtotime($row->created_at)) }}</td>
+                                <td>{{ $row->nama_korban ?? '-' }}</td>
+                                <td>
+                                    @if($row->jenis_kekerasan)
+                                        <span style="background:#e8f4fd; color:#1a5276; padding:4px 12px; border-radius:50px; font-size:12px; font-weight:600; display:inline-block;">
+                                            {{ ucfirst($row->jenis_kekerasan) }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <x-status-badge status="{{ $row->status }}" />
+                                </td>
+                                <td>
+                                    <a href="{{ url('user/complaint/detail/'.$row->id) }}" class="btn-detail">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </a>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -258,7 +276,8 @@
 <script>
     $(document).ready(function() {
         $('#datatable').DataTable({
-            responsive: true,
+            responsive: false,
+            scrollX: false,
             language: {
                 search: "Cari:",
                 lengthMenu: "Tampilkan _MENU_ data",
@@ -276,11 +295,11 @@
             },
             pageLength: 10,
             order: [[1, 'desc']],
- columnDefs: [
-    { orderable: false, targets: [6] },
-    { className: "text-center", targets: "_all" },
-    { width: "120px", targets: [6] }
-],
+            columnDefs: [
+                { orderable: false, targets: [6] },
+                { className: "text-center", targets: "_all" }
+            ],
+            autoWidth: false,
         });
     });
 </script>
