@@ -9,9 +9,11 @@ use App\Http\Controllers\Auth\ComplaintController;
 use App\Http\Controllers\Auth\ContentController;
 use App\Http\Controllers\Auth\MasyarakatController;
 
-// Dashboard publik
-Route::get('/', [FrontendController::class, 'publicHome'])
-    ->name('home_public');
+
+
+Route::get('/', function () {
+    return view('landing');
+})->name('home_public');
 
 
 // Auth society
