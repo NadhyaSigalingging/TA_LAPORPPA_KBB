@@ -167,7 +167,7 @@
 
                             <a href="{{ route('admin.register') }}"
                                 class="flex items-center gap-1 text-gray-300 hover:text-white transition">
-                                 + Daftar
+                                + Daftar
                             </a>
 
                         </div>
@@ -196,16 +196,7 @@
     </script>
 
     <!-- 🔥 POPUP ERROR -->
-    @if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Login Gagal',
-            text: '{{ session('error') }}',
-            confirmButtonColor: '#dc2626',
-        });
-    </script>
-    @endif
+    
 
 </body>
 

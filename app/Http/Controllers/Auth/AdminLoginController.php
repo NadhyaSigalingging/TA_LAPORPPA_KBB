@@ -26,17 +26,26 @@ class AdminLoginController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | LOGIN
+    | LOGIN ADMIN
     |--------------------------------------------------------------------------
     */
     public function login(Request $request)
     {
+        // ✅ VALIDASI INDONESIA
         $request->validate([
             'username' => 'required',
             'password' => 'required',
+        ], [
+            'username.required' => 'Username wajib diisi',
+            'password.required' => 'Password wajib diisi',
         ]);
 
-        $credentials = $request->only('username', 'password');
+        // ✅ FILTER LANGSUNG ADMIN (INI YANG PALING PENTING)
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password,
+            'role' => 'admin' // 🔥 hanya admin yang bisa login
+        ];
 
         if (Auth::attempt($credentials)) {
 
@@ -44,28 +53,18 @@ class AdminLoginController extends Controller
 
             $user = Auth::user();
 
-            // ✅ CEK ROLE
-            if ($user->role !== 'admin') {
-                Auth::logout();
-                return back()->withErrors([
-                    'username' => 'Akun ini bukan admin'
-                ]);
-            }
-
-            // ✅ CEK STATUS
+            // 🔒 CEK STATUS SAJA (ROLE SUDAH TERFILTER)
             if ($user->status !== 'active') {
                 Auth::logout();
-                return back()->withErrors([
-                    'username' => 'Akun belum disetujui admin'
-                ]);
+                return back()->with('error', 'Akun Anda belum disetujui')->withInput();
             }
 
             return redirect()->route('auth.admin.dashboard.index')
-                ->with('success', 'Welcome back ' . $user->username);
+                ->with('success', 'Selamat datang kembali, ' . $user->username);
         }
 
-        return back()->with('error', 'Username atau password salah')
-             ->withInput();
+        // ❌ GAGAL LOGIN
+        return back()->with('error', 'Username atau password salah')->withInput();
     }
 
     /*
@@ -80,6 +79,19 @@ class AdminLoginController extends Controller
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi',
+
+            'username.required' => 'Username wajib diisi',
+            'username.unique' => 'Username sudah digunakan',
+
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal 6 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak sama',
         ]);
 
         User::create([
@@ -87,13 +99,14 @@ class AdminLoginController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',
-            'status' => 'pending'
+            'role' => 'admin',     // 🔥 tetap admin
+            'status' => 'pending'  // 🔥 harus di-approve
         ]);
 
-        return redirect()->route('admin.login')
+        return redirect()->route('admin.pending')
             ->with('success', 'Akun berhasil dibuat, menunggu persetujuan admin');
     }
+
     /*
     |--------------------------------------------------------------------------
     | LOGOUT
@@ -106,6 +119,7 @@ class AdminLoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login');
+        return redirect()->route('admin.login')
+            ->with('success', 'Berhasil logout');
     }
 }

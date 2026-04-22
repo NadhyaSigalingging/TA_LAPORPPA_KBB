@@ -110,6 +110,10 @@ Route::get('/admin/register', function () {
 Route::post('/admin/register', [AdminLoginController::class, 'registerAdmin'])
     ->name('admin.register.save');
 
+Route::get('/admin/pending', function () {
+    return view('auth.admin.pending');
+})->name('admin.pending');
+
 /*
 |--------------------------------------------------------------------------
 | LOGOUT GLOBAL
