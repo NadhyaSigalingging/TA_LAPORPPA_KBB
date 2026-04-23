@@ -8,10 +8,22 @@ class Content extends Model
 {
     protected $fillable = [
         'title',
-        'description',
+        'slug',
+        'body',
+        'category_id',
         'image',
-        'type',
-        'tanggal_upload',
-        'user_id'
+        'meta_title',
+        'meta_description',
+        'status'
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -13,11 +14,16 @@ return new class extends Migration {
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description');
+            $table->string('slug')->unique();
+            $table->longText('body');
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->string('image')->nullable();
-            $table->enum('type', ['edukasi', 'informasi', 'berita']);
-            $table->date('tanggal_upload');
-            $table->unsignedBigInteger('user_id');
+
+            // SEO
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+
+            $table->enum('status', ['draft', 'publish'])->default('draft');
             $table->timestamps();
         });
     }

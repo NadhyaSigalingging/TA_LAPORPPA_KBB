@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Date;
+use App\Helpers\NotificationHelper;
 
 
 
@@ -30,33 +31,33 @@ class FrontendController extends Controller
     public function save(Request $request)
     {
         $validated = $request->validate([
-            'nik' => 'required|digits:16|unique:society,nik',
-            'name' => 'required|min:2|max:50',
-            'username' => 'required|min:2|max:20|unique:society,username',
-            'email' => 'required|email|unique:society,email',
-            'password' => 'required|min:6|max:20|confirmed',
+            'nik'                   => 'required|digits:16|unique:society,nik',
+            'name'                  => 'required|min:2|max:50',
+            'username'              => 'required|min:2|max:20|unique:society,username',
+            'email'                 => 'required|email|unique:society,email',
+            'password'              => 'required|min:6|max:20|confirmed',
         ], [
-            'nik.required' => 'NIK wajib diisi.',
-            'nik.digits' => 'NIK harus tepat 16 digit angka.',
-            'nik.unique' => 'NIK sudah terdaftar.',
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'username.required' => 'Username wajib diisi.',
-            'username.unique' => 'Username sudah dipakai, pilih yang lain.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah terdaftar.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 6 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'nik.required'          => 'NIK wajib diisi.',
+            'nik.digits'            => 'NIK harus tepat 16 digit angka.',
+            'nik.unique'            => 'NIK sudah terdaftar.',
+            'name.required'         => 'Nama lengkap wajib diisi.',
+            'username.required'     => 'Username wajib diisi.',
+            'username.unique'       => 'Username sudah dipakai, pilih yang lain.',
+            'email.required'        => 'Email wajib diisi.',
+            'email.email'           => 'Format email tidak valid.',
+            'email.unique'          => 'Email sudah terdaftar.',
+            'password.required'     => 'Password wajib diisi.',
+            'password.min'          => 'Password minimal 6 karakter.',
+            'password.confirmed'    => 'Konfirmasi password tidak cocok.',
         ]);
 
-        $society = new Society();
-        $society->nik = $validated['nik'];
-        $society->name = $validated['name'];
+        $society           = new Society();
+        $society->nik      = $validated['nik'];
+        $society->name     = $validated['name'];
         $society->username = $validated['username'];
-        $society->email = $validated['email'];
+        $society->email    = $validated['email'];
         $society->password = Hash::make($validated['password']);
-        $society->photo = 'default.png';
+        $society->photo    = 'default.png';
 
         $society->save();
 
@@ -68,10 +69,10 @@ class FrontendController extends Controller
     public function postlogin(Request $request)
     {
         $request->validate([
-            'login' => 'required',
+            'login'    => 'required',
             'password' => 'required',
         ], [
-            'login.required' => 'Username atau email wajib diisi.',
+            'login.required'    => 'Username atau email wajib diisi.',
             'password.required' => 'Password wajib diisi.',
         ]);
 
@@ -82,17 +83,17 @@ class FrontendController extends Controller
 
         if ($society && Hash::check($request->password, $society->password)) {
             Session::put([
-                'society_id' => $society->id,
-                'nik' => $society->nik,
-                'name' => $society->name,
-                'username' => $society->username,
-                'email' => $society->email,
-                'photo' => $society->photo,
+                'society_id'   => $society->id,
+                'nik'          => $society->nik,
+                'name'         => $society->name,
+                'username'     => $society->username,
+                'email'        => $society->email,
+                'photo'        => $society->photo,
                 // Data tambahan (nullable, dari profil)
                 'phone_number' => $society->phone_number,
-                'address' => $society->address,
-                'birth_date' => $society->birth_date,
-                'gender' => $society->gender,
+                'address'      => $society->address,
+                'birth_date'   => $society->birth_date,
+                'gender'       => $society->gender,
             ]);
 
             return redirect()->route('user_home')
@@ -147,28 +148,28 @@ class FrontendController extends Controller
     public function save_complaint(Request $request)
     {
         $rules = [
-            'victim_type' => 'required|in:self,other',
-            'jenis_kekerasan' => 'required|in:fisik,psikis,seksual,ekonomi,penelantaran',
-            'nama_korban' => 'required|min:3|max:100',
-            'tgl_lahir_korban' => 'required|date|before:today',
-            'jenis_kelamin_korban' => 'required|in:perempuan,laki-laki',
+            'victim_type'           => 'required|in:self,other',
+            'jenis_kekerasan'       => 'required|in:fisik,psikis,seksual,ekonomi,penelantaran',
+            'nama_korban'           => 'required|min:3|max:100',
+            'tgl_lahir_korban'      => 'required|date|before:today',
+            'jenis_kelamin_korban'  => 'required|in:perempuan,laki-laki',
             'alamat_korban_tinggal' => 'required|min:5|max:500',
-            'nomor_korban' => 'required|min:10|max:13',
-            'alamat_korban' => 'required|min:5|max:500',
-            'waktu_kejadian' => 'required|date_format:Y-m-d\TH:i|before_or_equal:now',
+            'nomor_korban'          => 'required|min:10|max:13',
+            'alamat_korban'         => 'required|min:5|max:500',
+            'waktu_kejadian'        => 'required|date_format:Y-m-d\TH:i|before_or_equal:now',
             'contents_of_the_report' => 'required|min:10|max:5000',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:50000',
+            'photo'                 => 'nullable|image|mimes:jpeg,png,jpg,gif|max:50000',
             // NIK korban: opsional untuk semua (self sudah dari session, other tidak wajib)
-            'nik_korban' => 'nullable|digits:16',
+            'nik_korban'            => 'nullable|digits:16',
         ];
 
         $request->validate($rules, [
             'tgl_lahir_korban.required' => 'Tanggal lahir korban wajib diisi.',
-            'tgl_lahir_korban.date' => 'Format tanggal lahir tidak valid.',
-            'tgl_lahir_korban.before' => 'Tanggal lahir tidak boleh hari ini atau masa depan.',
-            'nik_korban.digits' => 'NIK korban harus tepat 16 digit angka.',
-            'nomor_korban.required' => 'Nomor telepon korban wajib diisi.',
-            'nomor_korban.min' => 'Nomor telepon minimal 10 digit.',
+            'tgl_lahir_korban.date'     => 'Format tanggal lahir tidak valid.',
+            'tgl_lahir_korban.before'   => 'Tanggal lahir tidak boleh hari ini atau masa depan.',
+            'nik_korban.digits'         => 'NIK korban harus tepat 16 digit angka.',
+            'nomor_korban.required'     => 'Nomor telepon korban wajib diisi.',
+            'nomor_korban.min'          => 'Nomor telepon minimal 10 digit.',
         ]);
 
         // Cek NIK korban tidak boleh sama dengan NIK pelapor (jika diisi)
@@ -189,21 +190,21 @@ class FrontendController extends Controller
             } while (Complaint::where('unique_code', $uniqueCode)->exists());
 
             $complaint = new Complaint();
-            $complaint->unique_code = $uniqueCode;
-            $complaint->victim_type = $request->victim_type;
-            $complaint->jenis_kekerasan = $request->jenis_kekerasan;
-            $complaint->nama_korban = $request->nama_korban;
-            $complaint->tgl_lahir_korban = $request->tgl_lahir_korban;
-            $complaint->jenis_kelamin_korban = $request->jenis_kelamin_korban;
-            $complaint->alamat_korban_tinggal = $request->alamat_korban_tinggal;
-            $complaint->alamat_korban = $request->alamat_korban;
-            $complaint->waktu_kejadian = $request->waktu_kejadian;
-            $complaint->nomor_korban = $request->nomor_korban;
-            $complaint->contents_of_the_report = $request->contents_of_the_report;
-            $complaint->status = '0';
-            $complaint->nik = Session::get('nik');
-            $complaint->society_id = Session::get('society_id');
-            $complaint->date_complaint = Date::now()->format('Y-m-d');
+            $complaint->unique_code             = $uniqueCode;
+            $complaint->victim_type             = $request->victim_type;
+            $complaint->jenis_kekerasan         = $request->jenis_kekerasan;
+            $complaint->nama_korban             = $request->nama_korban;
+            $complaint->tgl_lahir_korban        = $request->tgl_lahir_korban;
+            $complaint->jenis_kelamin_korban    = $request->jenis_kelamin_korban;
+            $complaint->alamat_korban_tinggal   = $request->alamat_korban_tinggal;
+            $complaint->alamat_korban           = $request->alamat_korban;
+            $complaint->waktu_kejadian          = $request->waktu_kejadian;
+            $complaint->nomor_korban            = $request->nomor_korban;
+            $complaint->contents_of_the_report  = $request->contents_of_the_report;
+            $complaint->status                  = '0';
+            $complaint->nik                     = Session::get('nik');
+            $complaint->society_id              = Session::get('society_id');
+            $complaint->date_complaint          = Date::now()->format('Y-m-d');
 
             // NIK korban
             if ($request->victim_type === 'self') {
@@ -214,7 +215,7 @@ class FrontendController extends Controller
             }
 
             if ($request->hasFile('photo')) {
-                $photo = $request->file('photo');
+                $photo     = $request->file('photo');
                 $photoName = time() . '_' . $photo->getClientOriginalName();
                 $photo->move(public_path('avatar_complaint'), $photoName);
                 $complaint->photo = $photoName;
@@ -222,10 +223,13 @@ class FrontendController extends Controller
 
             $complaint->save();
 
-
+            NotificationHelper::buatLaporanBaru($complaint);
 
             return redirect()->route('complaint')
-                ->with('success', 'Pengaduan berhasil dikirim! Kode laporan Anda: <strong>' . $uniqueCode . '</strong>. Simpan kode ini untuk melacak laporan.');
+                ->with([
+                    'success' => 'Pengaduan berhasil dikirim!',
+                    'kode' => $uniqueCode
+                ]);
         } catch (\Exception $e) {
             return back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
@@ -236,7 +240,7 @@ class FrontendController extends Controller
     public function logout()
     {
         Session::flush();
-        return redirect()->route('user_login')
+        return redirect()->route('home_public')
             ->with('success', 'Logout berhasil.');
     }
 
@@ -256,7 +260,7 @@ class FrontendController extends Controller
             return redirect('/');
         }
 
-        $complaint = Complaint::findOrFail($id);
+        $complaint = Complaint::with('response')->findOrFail($id);
         return view('frontend.complaint.detail', compact('complaint'));
     }
 
@@ -271,7 +275,7 @@ class FrontendController extends Controller
             'unique_code' => 'required|min:3|max:20',
         ], [
             'unique_code.required' => 'Kode laporan wajib diisi.',
-            'unique_code.min' => 'Kode laporan minimal 3 karakter.',
+            'unique_code.min'      => 'Kode laporan minimal 3 karakter.',
         ]);
 
         // Cari berdasarkan kode unik (case-insensitive)
@@ -282,7 +286,7 @@ class FrontendController extends Controller
 
         if (!$complaint) {
             return view('frontend.complaint.track', [
-                'not_found' => true,
+                'not_found'   => true,
                 'unique_code' => $request->unique_code,
             ]);
         }
@@ -311,31 +315,31 @@ class FrontendController extends Controller
         $society = Society::findOrFail(Session::get('society_id'));
 
         $request->validate([
-            'nik' => 'required|digits:16|unique:society,nik,' . $society->id,
-            'name' => 'required|min:2|max:50',
-            'username' => 'required|min:2|max:20|unique:society,username,' . $society->id,
-            'email' => 'required|email|unique:society,email,' . $society->id,
-            'birth_date' => 'nullable|date|before:today',
-            'gender' => 'nullable|in:perempuan,laki-laki',
+            'nik'          => 'required|digits:16|unique:society,nik,' . $society->id,
+            'name'         => 'required|min:2|max:50',
+            'username'     => 'required|min:2|max:20|unique:society,username,' . $society->id,
+            'email'        => 'required|email|unique:society,email,' . $society->id,
+            'birth_date'   => 'nullable|date|before:today',
+            'gender'       => 'nullable|in:perempuan,laki-laki',
             'phone_number' => 'nullable|min:10|max:13',
-            'address' => 'nullable|min:5|max:500',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'address'      => 'nullable|min:5|max:500',
+            'photo'        => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
-            'nik.required' => 'NIK wajib diisi.',
-            'nik.digits' => 'NIK harus tepat 16 digit angka.',
-            'nik.unique' => 'NIK sudah dipakai akun lain.',
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'username.required' => 'Username wajib diisi.',
-            'username.unique' => 'Username sudah dipakai akun lain.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah dipakai akun lain.',
-            'birth_date.date' => 'Format tanggal lahir tidak valid.',
-            'birth_date.before' => 'Tanggal lahir tidak boleh hari ini atau masa depan.',
-            'phone_number.min' => 'Nomor telepon minimal 10 digit.',
-            'phone_number.max' => 'Nomor telepon maksimal 13 digit.',
-            'photo.image' => 'File harus berupa gambar.',
-            'photo.max' => 'Ukuran foto maksimal 2MB.',
+            'nik.required'       => 'NIK wajib diisi.',
+            'nik.digits'         => 'NIK harus tepat 16 digit angka.',
+            'nik.unique'         => 'NIK sudah dipakai akun lain.',
+            'name.required'      => 'Nama lengkap wajib diisi.',
+            'username.required'  => 'Username wajib diisi.',
+            'username.unique'    => 'Username sudah dipakai akun lain.',
+            'email.required'     => 'Email wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'email.unique'       => 'Email sudah dipakai akun lain.',
+            'birth_date.date'    => 'Format tanggal lahir tidak valid.',
+            'birth_date.before'  => 'Tanggal lahir tidak boleh hari ini atau masa depan.',
+            'phone_number.min'   => 'Nomor telepon minimal 10 digit.',
+            'phone_number.max'   => 'Nomor telepon maksimal 13 digit.',
+            'photo.image'        => 'File harus berupa gambar.',
+            'photo.max'          => 'Ukuran foto maksimal 2MB.',
         ]);
 
         // Simpan NIK lama sebelum diubah
@@ -343,14 +347,14 @@ class FrontendController extends Controller
         $nikBerubah = $request->nik !== $oldNik;
 
         // Update data society
-        $society->nik = $request->nik;
-        $society->name = $request->name;
-        $society->username = $request->username;
-        $society->email = $request->email;
-        $society->birth_date = $request->birth_date ?: null;
-        $society->gender = $request->gender ?: null;
+        $society->nik          = $request->nik;
+        $society->name         = $request->name;
+        $society->username     = $request->username;
+        $society->email        = $request->email;
+        $society->birth_date   = $request->birth_date ?: null;
+        $society->gender       = $request->gender ?: null;
         $society->phone_number = $request->phone_number ?: null;
-        $society->address = $request->address ?: null;
+        $society->address      = $request->address ?: null;
 
         // Proses upload foto jika ada
         if ($request->hasFile('photo')) {
@@ -360,7 +364,7 @@ class FrontendController extends Controller
                     unlink($oldPath);
                 }
             }
-            $photo = $request->file('photo');
+            $photo     = $request->file('photo');
             $photoName = time() . '_' . $photo->getClientOriginalName();
             $photo->move(public_path('avatar_society'), $photoName);
             $society->photo = $photoName;
@@ -382,15 +386,15 @@ class FrontendController extends Controller
 
         // Update session dengan data terbaru
         Session::put([
-            'nik' => $society->nik,
-            'name' => $society->name,
-            'username' => $society->username,
-            'email' => $society->email,
-            'photo' => $society->photo,
+            'nik'          => $society->nik,
+            'name'         => $society->name,
+            'username'     => $society->username,
+            'email'        => $society->email,
+            'photo'        => $society->photo,
             'phone_number' => $society->phone_number,
-            'address' => $society->address,
-            'birth_date' => $society->birth_date,
-            'gender' => $society->gender,
+            'address'      => $society->address,
+            'birth_date'   => $society->birth_date,
+            'gender'       => $society->gender,
         ]);
 
         // Pesan sukses, beri tahu user jika NIK berubah
@@ -402,5 +406,4 @@ class FrontendController extends Controller
         return redirect()->route('user_profile')
             ->with('success', $message);
     }
-
 }

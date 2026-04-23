@@ -13,10 +13,12 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\Auth\ComplaintController;
-use App\Http\Controllers\Auth\ContentController;
 use App\Http\Controllers\Auth\MasyarakatController;
+use App\Http\Controllers\Admin\ContentController;
+use App\Http\Controllers\BlogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,16 +33,20 @@ Route::get('/', [FrontendController::class, 'publicHome'])->name('home_public');
 | USER AUTH
 |--------------------------------------------------------------------------
 */
-Route::prefix('user')->group(function () {
+Route::get('/user/login', [FrontendController::class, 'login'])
+    ->name('user_login');
 
-    Route::get('/login', [FrontendController::class, 'login'])->name('user_login');
-    Route::post('/login', [FrontendController::class, 'postlogin'])->name('postlogin');
+Route::post('/user/login/cek', [FrontendController::class, 'postlogin'])
+    ->name('postlogin');
 
-    Route::get('/register', [FrontendController::class, 'register'])->name('user_register');
-    Route::post('/register/save', [FrontendController::class, 'save'])->name('user_register_save');
+Route::get('/user/register', [FrontendController::class, 'register'])
+    ->name('user_register');
 
-    Route::get('/logout', [FrontendController::class, 'logout'])->name('user_logout');
-});
+Route::post('/user/register/save', [FrontendController::class, 'save'])
+    ->name('user_register_save');
+
+Route::get('/user/logout', [FrontendController::class, 'logout'])
+    ->name('user_logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -195,6 +201,14 @@ Route::middleware(['auth', 'checkRole:admin'])
         Route::patch('/complaints/{complaint}/reject', [ComplaintController::class, 'reject'])
             ->name('complaints.reject');
 
+
+
+
+        Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+
+        Route::get('/blog/{slug}', [BlogController::class, 'detail'])->name('blog.detail');
+
+        Route::post('/comment', [BlogController::class, 'comment'])->name('comment.store');
         /*
         |--------------------------------------------------------------------------
         | MASYARAKAT
@@ -223,21 +237,20 @@ Route::middleware(['auth', 'checkRole:admin'])
         | CONTENT
         |--------------------------------------------------------------------------
         */
-        Route::get('/content', [ContentController::class, 'index'])
-            ->name('auth.admin.content.index');
+        Route::get('/content', [ContentController::class, 'index'])->name('auth.admin.content.index');
+        Route::get('/content/create', [ContentController::class, 'create'])->name('auth.admin.content.create');
+        Route::post('/content/store', [ContentController::class, 'store'])->name('auth.admin.content.store');
+        Route::post('/upload-image', [ContentController::class, 'uploadImage'])->name('upload.image');
 
-        Route::get('/content/create', [ContentController::class, 'create'])
-            ->name('auth.admin.content.create');
+        Route::get('/category', [CategoryController::class, 'index'])
+            ->name('admin.category.index');
 
-        Route::post('/content/store', [ContentController::class, 'store'])
-            ->name('auth.admin.content.store');
+        Route::get('/category/create', [CategoryController::class, 'create'])
+            ->name('admin.category.create');
 
-        Route::get('/content/edit/{id}', [ContentController::class, 'edit'])
-            ->name('auth.admin.content.edit');
+        Route::post('/category/store', [CategoryController::class, 'store'])
+            ->name('admin.category.store');
 
-        Route::post('/content/update/{id}', [ContentController::class, 'update'])
-            ->name('auth.admin.content.update');
-
-        Route::get('/content/delete/{id}', [ContentController::class, 'destroy'])
-            ->name('auth.admin.content.delete');
+        Route::post('/category/delete/{id}', [CategoryController::class, 'destroy'])
+            ->name('admin.category.delete');
     });
