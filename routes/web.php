@@ -8,9 +8,13 @@ use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\ComplaintController;
 use App\Http\Controllers\Auth\ContentController;
 use App\Http\Controllers\Auth\MasyarakatController;
+use App\Http\Controllers\NotificationController;
 
 
 
+
+
+// Hapus route publicHome lama, ganti dengan:
 Route::get('/', function () {
     return view('landing');
 })->name('home_public');
@@ -57,6 +61,14 @@ Route::get('track-complaint', [FrontendController::class, 'track_complaint'])->n
 Route::post('search-complaint', [FrontendController::class, 'search_complaint'])->name('search_complaint');
 Route::get('user/profile', [FrontendController::class, 'profile'])->name('user_profile');
 Route::post('user/profile/update', [FrontendController::class, 'updateProfile'])->name('user_profile_update');
+
+
+
+
+// NOTIFIKASI PELAPOR
+Route::get('/notifikasi/baca/{id}',  [App\Http\Controllers\NotificationController::class, 'baca'])->name('notif.baca');
+Route::post('/notifikasi/baca-semua', [App\Http\Controllers\NotificationController::class, 'bacaSemua'])->name('notif.baca_semua');
+Route::get('/notifikasi/data',        [App\Http\Controllers\NotificationController::class, 'ambilNotifikasi'])->name('notif.data');
 
 Route::get('/login', function () {
     return redirect()->route('admin.login');

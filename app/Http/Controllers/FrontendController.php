@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Date;
+use App\Helpers\NotificationHelper;
 
 
 
@@ -222,7 +223,7 @@ class FrontendController extends Controller
 
         $complaint->save();
 
-
+    NotificationHelper::buatLaporanBaru($complaint);
 
         return redirect()->route('complaint')
         ->with([

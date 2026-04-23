@@ -26,7 +26,11 @@ class Complaint extends Model
      */
 
     public function response()
-{
-    return $this->hasOne(\App\Models\Response::class, 'complaint_id', 'id');
-}
+    {
+        return $this->hasOne(\App\Models\Response::class, 'complaint_id', 'id');
+    }
+    public function notifications()
+    {
+        return $this->hasMany(\App\Models\Notification::class, 'complaint_id', 'id');
+    }
 }
